@@ -44,7 +44,7 @@ const Header = ({props}) => {
         }>
         <Entypo name={'chevron-left'} size={25} color={'black'} />
       </TouchableOpacity>
-      <View>
+      <View style={{justifyContent: 'center'}}>
         <Text style={styles.HeaderText}>{props.route.params.data.title} </Text>
         <Text style={styles.HeaderText2}>
           In Theaters {convertDateFormat(props.route.params.data.release_date)}{' '}
@@ -55,17 +55,18 @@ const Header = ({props}) => {
   );
 };
 
-const TimeView = () => {
-  const [Selected, setSelected] = useState('');
+const TimeView = ({selectedTime, setselectedTime}) => {
   const timelist = ['12:30', '13:30', '14:30', '15;30'];
 
-  const TimeItemView = ({item}) => {
+  const TimeItemView = ({item, setselectedTime}) => {
     return (
-      <TouchableOpacity onPress={() => setSelected(item)}>
-        <View>
-          <View>
-            <Text>{item}</Text>
-            <Text>Cinetech + Hall 1</Text>
+      <TouchableOpacity onPress={() => setselectedTime(item)}>
+        <View style={{opacity: selectedTime == item ? 1 : 0.5}}>
+          <View style={{flexDirection: 'row', gap: 10}}>
+            <Text style={{color: 'black', fontSize: 15, fontWeight: '500'}}>
+              {item}
+            </Text>
+            <Text style={{color: 'gray', fontSize: 15}}>Cinetech + Hall 1</Text>
           </View>
           <View
             style={{
@@ -76,7 +77,7 @@ const TimeView = () => {
               paddingVertical: WindowHeight * 0.02,
               borderRadius: 20,
               marginTop: 10,
-              borderColor: Selected == item ? '#61C3F2' : 'black',
+              borderColor: selectedTime == item ? '#61C3F2' : 'black',
             }}>
             <Image
               style={{width: WindowWidth * 0.4, height: WindowHeight * 0.2}}
@@ -84,7 +85,17 @@ const TimeView = () => {
             />
           </View>
           <View>
-            <Text>From 50$ or 2500 bonus</Text>
+            <Text style={{fontSize: 15, color: 'gray'}}>
+              From{' '}
+              <Text style={{fontSize: 15, color: 'black', fontWeight: '500'}}>
+                50$
+              </Text>{' '}
+              or{' '}
+              <Text style={{fontSize: 15, color: 'black', fontWeight: '500'}}>
+                {' '}
+                2500 bonus
+              </Text>
+            </Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -104,14 +115,14 @@ const TimeView = () => {
         contentContainerStyle={{gap: WindowWidth * 0.1}}
         keyExtractor={(item, index) => String(index)}
         renderItem={({item}) => {
-          return <TimeItemView item={item} setSelected={setSelected} />;
+          return <TimeItemView item={item} setselectedTime={setselectedTime} />;
         }}
       />
     </View>
   );
 };
 
-const DateView = () => {
+const DateView = ({selectedDate, setselectedDate}) => {
   const getNextTenDates = () => {
     const months = [
       'Jan',
@@ -141,21 +152,20 @@ const DateView = () => {
     return dates;
   };
 
-  const [Selected, setSelected] = useState('');
   const nextDateList = getNextTenDates();
 
-  const DateItemView = ({item, setSelected}) => {
+  const DateItemView = ({item, setselectedDate}) => {
     return (
-      <TouchableOpacity onPress={() => setSelected(item)}>
+      <TouchableOpacity onPress={() => setselectedDate(item)}>
         <Text
           style={{
-            backgroundColor: Selected == item ? '#61C3F2' : '#A6A6A6',
+            backgroundColor: selectedDate == item ? '#61C3F2' : '#A6A6A6',
             width: WindowWidth * 0.25,
             textAlign: 'center',
             height: WindowHeight * 0.04,
             borderRadius: WindowHeight * 0.04,
             textAlignVertical: 'center',
-            color: Selected == item ? 'white' : 'black',
+            color: selectedDate == item ? 'white' : 'black',
           }}>
           {item}
         </Text>
@@ -170,24 +180,74 @@ const DateView = () => {
         //   backgroundColor: 'red',
         height: WindowHeight * 0.15,
       }}>
-      <Text style={styles.HeaderText}>Date</Text>
+      <Text
+        style={{
+          fontSize: 20,
+          color: 'black',
+          fontWeight: '500',
+        }}>
+        Date
+      </Text>
       <FlatList
         data={nextDateList}
         horizontal
         contentContainerStyle={{gap: 10}}
         keyExtractor={(item, index) => String(index)}
         renderItem={({item}) => {
-          return <DateItemView item={item} setSelected={setSelected} />;
+          return <DateItemView item={item} setselectedDate={setselectedDate} />;
         }}
       />
     </View>
   );
 };
 
+const ButtonView = ({props, selectedDate, selectedTime}) => {
+  return (
+    <TouchableOpacity
+      onPress={() =>
+        props.navigation.navigate('SelectSeat', {
+          data: {
+            selectedDate: selectedDate,
+            selectedTime: selectedTime,
+            MovieName: props.route.params.data.title,
+            data: props.route.params.data,
+          },
+        })
+      }>
+      <View style={{alignItems: 'center', justifyContent: 'center'}}>
+        <Text
+          style={{
+            textAlignVertical: 'center',
+            color: 'white',
+            fontSize: 16,
+            fontWeight: '500',
+            borderRadius: 10,
+            textAlign: 'center',
+            backgroundColor:
+              selectedDate == '' || selectedDate == '' ? 'gray' : '#61C3F2',
+            width: WindowWidth * 0.65,
+            height: WindowHeight * 0.05,
+            opacity: selectedDate == '' || selectedTime == '' ? 0.5 : 1,
+          }}>
+          Select Seats
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
 export default function SelectTime(props) {
+  const [selectedDate, setselectedDate] = useState('');
+  const [selectedTime, setselectedTime] = useState('');
+
   useEffect(() => {
     console.log('PropsData', props.route.params.data);
   }, []);
+
+  useEffect(() => {
+    console.log('selectedTime', selectedTime);
+    console.log('selectedDate', selectedDate);
+  }, [selectedDate, selectedTime]);
 
   return (
     <View
@@ -204,26 +264,21 @@ export default function SelectTime(props) {
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <DateView />
-        <TimeView />
+        <DateView
+          selectedDate={selectedDate}
+          setselectedDate={setselectedDate}
+        />
+        <TimeView
+          selectedTime={selectedTime}
+          setselectedTime={setselectedTime}
+        />
       </View>
       <View style={{width: WindowWidth, height: WindowHeight * 0.1}}>
-        <View style={{alignItems: 'center', justifyContent: 'center'}}>
-          <Text
-            style={{
-              textAlignVertical: 'center',
-              color: 'white',
-              fontSize: 16,
-              fontWeight: '500',
-              borderRadius: 10,
-              textAlign: 'center',
-              backgroundColor: '#61C3F2',
-              width: WindowWidth * 0.65,
-              height: WindowHeight * 0.05,
-            }}>
-            Select Seats
-          </Text>
-        </View>
+        <ButtonView
+          props={props}
+          selectedDate={selectedDate}
+          selectedTime={selectedTime}
+        />
       </View>
     </View>
   );
@@ -244,10 +299,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'black',
     fontWeight: '400',
+    textAlign: 'center',
   },
   HeaderText2: {
-    fontSize: 13,
+    fontSize: 15,
     color: '#61C3F2',
     fontWeight: '500',
+    textAlign: 'center',
   },
 });
