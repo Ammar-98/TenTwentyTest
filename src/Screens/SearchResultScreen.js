@@ -12,6 +12,9 @@ import AppContext from '../../context/AppContext';
 import Entypo from 'react-native-vector-icons/Entypo';
 
 export default function SearchResultScreen(props) {
+
+  
+
   const Header = () => {
     return (
       <View style={styles.Header}>
