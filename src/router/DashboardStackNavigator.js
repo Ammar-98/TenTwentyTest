@@ -7,6 +7,7 @@ import SearchResultScreen from '../Screens/SearchResultScreen';
 import Router from './Router';
 import SelectTime from '../Screens/SelectTime';
 import SelectSeat from '../Screens/SelectSeat';
+import YoutubeTrailerScreen from '../Screens/YoutubeTrailerScreen';
 const Stack = createNativeStackNavigator();
 export default function DashboardStackNavigator() {
     return (
@@ -19,6 +20,8 @@ export default function DashboardStackNavigator() {
           <Stack.Screen name="SearchResultScreen" component={SearchResultScreen} />
           <Stack.Screen name="SelectTime" component={SelectTime} />
           <Stack.Screen name="SelectSeat" component={SelectSeat} />
+          <Stack.Screen name="YoutubeTrailerScreen" component={YoutubeTrailerScreen} />
+
 
 
         </Stack.Navigator>

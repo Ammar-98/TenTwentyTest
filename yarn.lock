@@ -2586,6 +2586,11 @@ escape-string-regexp@^2.0.0:
 escape-string-regexp@^4.0.0:
   version "4.0.0"
 
+escape-string-regexp@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz"
+  integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
+
 eslint-config-prettier@^8.5.0:
   version "8.10.0"
 
@@ -2738,6 +2743,11 @@ etag@~1.8.1:
 
 event-target-shim@^5.0.0, event-target-shim@^5.0.1:
   version "5.0.1"
+
+events@^3.2.0:
+  version "3.3.0"
+  resolved "https://registry.npmjs.org/events/-/events-3.3.0.tgz"
+  integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
 
 execa@^5.0.0, execa@^5.1.1:
   version "5.1.1"
@@ -3112,7 +3122,7 @@ internal-slot@^1.0.7:
     hasown "^2.0.0"
     side-channel "^1.0.4"
 
-invariant@^2.2.4:
+invariant@^2.2.4, invariant@2.2.4:
   version "2.2.4"
   dependencies:
     loose-envify "^1.0.0"
@@ -4355,7 +4365,7 @@ prompts@^2.0.1, prompts@^2.4.2:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@^15.5.0, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   dependencies:
     loose-envify "^1.4.0"
@@ -4442,6 +4452,28 @@ react-native-vector-icons@^10.1.0:
   dependencies:
     prop-types "^15.7.2"
     yargs "^16.1.1"
+
+react-native-webview@^13.10.5:
+  version "13.10.5"
+  resolved "https://registry.npmjs.org/react-native-webview/-/react-native-webview-13.10.5.tgz"
+  integrity sha512-ZfQJHyifuZop8cQB8HYpL9dxss9Cw9sOlMU+/yarfG/ugoL0rky/0tq9QmEydFMXjDSplSUb22OrRdFlqfXe0g==
+  dependencies:
+    escape-string-regexp "2.0.0"
+    invariant "2.2.4"
+
+react-native-youtube-iframe@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.npmjs.org/react-native-youtube-iframe/-/react-native-youtube-iframe-2.3.0.tgz"
+  integrity sha512-M+z63xwXVtS4dX3k8PbtHUUcWN+gRZt6J1EtPE7Y60BMOB979KjpkdrHqeR96or9pNR2W8K5tQhIkMXW2jwo7Q==
+  dependencies:
+    events "^3.2.0"
+
+react-native-youtube@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/react-native-youtube/-/react-native-youtube-2.0.2.tgz"
+  integrity sha512-tyoGG8mqv0q2327BUYCXBmloUO8twFTOsGdwYvj0tiINAwtxNid8bS0KxnjViH3f/HmBqATDbPwhHpNXpOCsLA==
+  dependencies:
+    prop-types "^15.5.0"
 
 react-native@0.74.4:
   version "0.74.4"
