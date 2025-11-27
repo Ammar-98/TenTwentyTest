@@ -1,4 +1,13 @@
-import {StyleSheet, Text, View, TextInput, FlatList, Image, ActivityIndicator, Alert, TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  FlatList,
+  Image,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 import React, {useEffect, useState, useContext} from 'react';
 import {WindowHeight, WindowWidth} from '../../utils/Dimensions';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -14,7 +23,7 @@ const TextInputComp = ({
   searchQuery,
   setsearchQuery,
   props,
-  DisplayData
+  DisplayData,
 }) => {
   const handleSearchQuery = query => {
     setsearchQuery(query);
@@ -44,9 +53,14 @@ const TextInputComp = ({
             onChangeText={handleSearchQuery}
             placeholder="TV shows, movies and more"
             placeholderTextColor={'gray'}
-            onSubmitEditing={()=>props.navigation.navigate('SearchResultScreen',{data:DisplayData})}
+            onSubmitEditing={() =>
+              props.navigation.navigate('SearchResultScreen', {
+                data: DisplayData,
+              })
+            }
           />
-          <View onTouchStart={() => [setexpandSearch(false),setsearchQuery('')]}>
+          <View
+            onTouchStart={() => [setexpandSearch(false), setsearchQuery('')]}>
             <MaterialCommunityIcons name={'close'} size={25} color={'black'} />
           </View>
         </View>
@@ -55,7 +69,7 @@ const TextInputComp = ({
   );
 };
 
-const Header = ({searchQuery, setsearchQuery,props,DisplayData}) => {
+const Header = ({searchQuery, setsearchQuery, props, DisplayData}) => {
   const [expandSearch, setexpandSearch] = useState(false);
 
   return (
@@ -73,69 +87,19 @@ const Header = ({searchQuery, setsearchQuery,props,DisplayData}) => {
   );
 };
 
-export default function Watch(props) {
+const SearchView = ({item, props}) => {
   const {configURL} = useContext(AppContext);
-  const [Data, setData] = useState([]);
-  const [DisplayData, setDisplayData] = useState([]);
-  const [currentPage, setcurrentPage] = useState(1);
-  const [loading, setloading] = useState(true);
-  const [searchQuery, setsearchQuery] = useState('');
-  const key = '73beb2ce011840ee4dc6afc8ea0033a2';
-
-  const getData = async page => {
-    try {
-      setloading(true);
-      const res = await axios.get(
-        `https://api.themoviedb.org/3/movie/upcoming?api_key=${key}&page=${page}`,
-      );
-
-      console.log('res', res.data);
-      setloading(false);
-      setData(prevData => [...prevData, ...res.data.results]);
-      setDisplayData(prevDisplayData => [
-        ...prevDisplayData,
-        ...res.data.results,
-      ]);
-    } catch (error) {
-      console.log('error', error);
-      setloading(false);
-    }
-  };
-
-  useEffect(() => {
-    getData(currentPage);
-  }, [currentPage]);
-
-  useEffect(() => {
-    if (searchQuery === '') {
-      setDisplayData(Data);
-    } else {
-      const filteredData = Data.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
-      setDisplayData(filteredData);
-    }
-  }, [searchQuery, Data]);
-
-  const handleLoadMore = () => {
-    if (!loading) {
-      setcurrentPage(prevPage => prevPage + 1);
-    }
-  };
-
-  const SearchView = ({item}) => {
-    return (
-        <TouchableOpacity  onPress={()=>props.navigation.navigate('Details',{data:item})}>
+  return (
+    <TouchableOpacity
+      onPress={() => props.navigation.navigate('Details', {data: item})}>
       <View
-      
         style={{
           flexDirection: 'row',
           justifyContent: '',
           alignItems: 'center',
           width: WindowWidth * 0.95,
           paddingHorizontal: 10,
-        //   backgroundColor: 'red',
-          gap:10
+          gap: 10,
         }}>
         <Image
           style={{
@@ -145,40 +109,40 @@ export default function Watch(props) {
           }}
           source={{uri: String(configURL + item.backdrop_path)}}
         />
-        <View style={{flexDirection: 'row',width:'45%',alignItems:'center',justifyContent:'space-between'}}>
-          <View>
 
+        <View
+          style={{
+            flexDirection: 'row',
+            width: '45%',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+          <View>
             <Text
               style={{
                 color: 'black',
                 fontSize: 16,
-                fontWeight:600,
-                width:WindowWidth*0.3
-           
+                fontWeight: 600,
+                width: WindowWidth * 0.3,
               }}>
               {item.title}
             </Text>
-            {/* <Text
-              style={{
-                color: 'gray',
-                fontSize: 13,
-           
-              }}>
-              {item.title}
-            </Text> */}
+            <Text>{configURL}</Text>
+            {/* <Text>{item.backdrop_path}</Text> */}
           </View>
           <Entypo name={'dots-three-horizontal'} size={25} color={'#61C3F2'} />
         </View>
       </View>
-      </TouchableOpacity>
-    );
-  };
+    </TouchableOpacity>
+  );
+};
 
-  const NormalView = ({item}) => {
-    return (
-        <TouchableOpacity  onPress={()=>props.navigation.navigate('Details',{data:item})}>
-
-      <View >
+const NormalView = ({item, props}) => {
+  const {configURL} = useContext(AppContext);
+  return (
+    <TouchableOpacity
+      onPress={() => props.navigation.navigate('Details', {data: item})}>
+      <View>
         <Text
           style={{
             zIndex: 10,
@@ -201,13 +165,89 @@ export default function Watch(props) {
           source={{uri: String(configURL + item.backdrop_path)}}
         />
       </View>
-      </TouchableOpacity>
-    );
+    </TouchableOpacity>
+  );
+};
+
+export default function Watch(props) {
+  const [Data, setData] = useState([]);
+  const [DisplayData, setDisplayData] = useState([]);
+  const [currentPage, setcurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setloading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [searchQuery, setsearchQuery] = useState('');
+  const key = '73beb2ce011840ee4dc6afc8ea0033a2';
+
+  const getData = async page => {
+    try {
+      // Only show initial loading on first page
+      if (page === 1) {
+        setloading(true);
+      } else {
+        setLoadingMore(true);
+      }
+
+      const res = await axios.get(
+        `https://api.themoviedb.org/3/movie/upcoming?api_key=${key}&page=${page}`,
+      );
+
+      console.log('res', res.data.results);
+
+      // Update total pages from API response
+      if (res.data.total_pages) {
+        setTotalPages(res.data.total_pages);
+      }
+
+      setloading(false);
+      setLoadingMore(false);
+
+      // Append new data to existing data
+      setData(prevData => {
+        // Avoid duplicates by checking if page data already exists
+        const existingIds = new Set(prevData.map(item => item.id));
+        const newResults = res.data.results.filter(
+          item => !existingIds.has(item.id),
+        );
+        return [...prevData, ...newResults];
+      });
+    } catch (error) {
+      console.log('error', error);
+      setloading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    getData(currentPage);
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (searchQuery === '') {
+      setDisplayData(Data);
+    } else {
+      const filteredData = Data.filter(item =>
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+      setDisplayData(filteredData);
+    }
+  }, [searchQuery, Data]);
+
+  const handleLoadMore = () => {
+    // Only load more if not currently loading and there are more pages
+    if (!loading && !loadingMore && currentPage < totalPages) {
+      setcurrentPage(prevPage => prevPage + 1);
+    }
   };
 
   return (
     <View style={{backgroundColor: '#f6f6fa'}}>
-      <Header searchQuery={searchQuery} setsearchQuery={setsearchQuery} props={props} DisplayData={DisplayData} />
+      <Header
+        searchQuery={searchQuery}
+        setsearchQuery={setsearchQuery}
+        props={props}
+        DisplayData={DisplayData}
+      />
       <View
         style={{
           height: WindowHeight * 0.95,
@@ -222,20 +262,26 @@ export default function Watch(props) {
             gap: WindowHeight * 0.02,
           }}
           ListFooterComponent={
-            loading && (
-              <View style={{width:'100%',alignItems:'center',justifyContent:'center'}}>
-               <ActivityIndicator color={'gray'} />
+            loadingMore && (
+              <View
+                style={{
+                  width: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingVertical: WindowHeight * 0.02,
+                }}>
+                <ActivityIndicator color={'gray'} />
               </View>
             )
           }
-          keyExtractor={(item, index) => String(index)}
+          keyExtractor={item => String(item.id)}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
           renderItem={({item}) =>
-            searchQuery == '' ? (
-              <NormalView item={item} />
+            searchQuery === '' ? (
+              <NormalView item={item} props={props} />
             ) : (
-              <SearchView item={item} />
+              <SearchView item={item} props={props} />
             )
           }
         />

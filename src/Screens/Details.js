@@ -1,21 +1,54 @@
-import {
-  ActivityIndicator,
-  Animated,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import {Animated, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
 import {WindowHeight, WindowWidth} from '../../utils/Dimensions';
 import AppContext from '../../context/AppContext';
 import Entypo from 'react-native-vector-icons/Entypo';
 import axios from 'axios';
-// import YouTube from 'react-native-youtube';
+import {SafeAreaView} from 'react-native-safe-area-context';
+
+const Button = props => {
+  return (
+    <View
+      style={{
+        width: WindowWidth * 0.65,
+        height: WindowHeight * 0.08,
+        borderRadius: WindowWidth * 0.04,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 2,
+        borderColor: props.borderColor,
+        flexDirection: 'row',
+        gap: 4,
+      }}>
+      <View
+        style={{
+          ...StyleSheet.absoluteFillObject,
+          backgroundColor: props.backgroundColor
+            ? props.backgroundColor
+            : 'white',
+          opacity: props.backgroundColor ? 1 : 0.3,
+          borderRadius: WindowWidth * 0.04, // Ensure background has rounded corners
+        }}
+      />
+      {props.ShowPlayButton && (
+        <Entypo name={'controller-play'} size={25} color={props.textColor} />
+      )}
+      <Text
+        style={{
+          color: props.textColor,
+          fontSize: 20,
+          fontWeight: '500',
+          textShadowColor: 'black',
+          textShadowRadius: 5,
+          textShadowOffset: {width: 1, height: 1},
+          opacity: 1,
+        }}>
+        {props.text}
+      </Text>
+    </View>
+  );
+};
 export default function Details(props) {
-  const [Playing, setPlaying] = useState(true);
-  const [loading, setloading] = useState(false);
   const {configURL} = useContext(AppContext);
   const scrollY = new Animated.Value(0);
   const [VideoKey, setVideoKey] = useState('');
@@ -34,12 +67,12 @@ export default function Details(props) {
         while (i < res.data.results.length) {
           if (res.data.results[i].name.toLowerCase().includes('trailer')) {
             setVideoKey(res.data.results[i].key);
-            setTrailerAvailable(true)
+            setTrailerAvailable(true);
             return;
           }
           i = i + 1;
         }
-        if (VideoKey == '') {
+        if (VideoKey === '') {
           setVideoKey(res.data.results[0].key);
         }
 
@@ -55,6 +88,7 @@ export default function Details(props) {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function convertDateFormat(dateString) {
@@ -79,63 +113,6 @@ export default function Details(props) {
     return `${monthName} ${parseInt(day, 10)}, ${year}`;
   }
 
-  const Button = props => {
-    return (
-      <View
-        style={{
-          width: WindowWidth * 0.65,
-          height: WindowHeight * 0.08,
-          borderRadius: WindowWidth * 0.04,
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderWidth: 2,
-          borderColor: props.borderColor,
-          flexDirection: 'row',
-          gap: 4,
-        }}>
-        <View
-          style={{
-            ...StyleSheet.absoluteFillObject,
-            backgroundColor: props.backgroundColor
-              ? props.backgroundColor
-              : 'white',
-            opacity: props.backgroundColor ? 1 : 0.3,
-            borderRadius: WindowWidth * 0.04, // Ensure background has rounded corners
-          }}
-        />
-        {props.ShowPlayButton && (
-          <Entypo name={'controller-play'} size={25} color={props.textColor} />
-        )}
-        <Text
-          style={{
-            color: props.textColor,
-            fontSize: 20,
-            fontWeight: '500',
-            textShadowColor: 'black',
-            textShadowRadius: 5,
-            textShadowOffset: {width: 1, height: 1},
-            opacity: 1,
-          }}>
-          {props.text}
-        </Text>
-      </View>
-    );
-  };
-
-  if (loading == true)
-    return (
-      <View
-        style={{
-          width: WindowWidth,
-          height: WindowHeight,
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'white',
-        }}>
-        <ActivityIndicator color={'gray'} />
-      </View>
-    );
-
   const imageWidth = scrollY.interpolate({
     inputRange: [0, WindowWidth],
     outputRange: [WindowWidth, WindowWidth * 0.8],
@@ -143,124 +120,122 @@ export default function Details(props) {
   });
 
   return (
-    <View style={{width: WindowWidth, height: WindowHeight}}>
-      <Animated.ScrollView
-        onScroll={Animated.event(
-          [{nativeEvent: {contentOffset: {y: scrollY}}}],
-          {useNativeDriver: false},
-        )}
-        scrollEventThrottle={16}>
-        <View style={{width: WindowWidth, alignItems: 'center'}}>
-          <Animated.Image
-            style={{
-              height: WindowHeight * 0.65,
-              width: imageWidth,
-              resizeMode: 'cover',
-            }}
-            source={{
-              uri: String(configURL + props.route.params.data.poster_path),
-            }}
-          />
-          <Text
-            style={{
-              fontSize: 24,
-              fontWeight: '500',
-              color: 'white',
-              position: 'absolute',
-              zIndex: 10,
-              top: WindowHeight * 0.4,
-              alignSelf: 'center',
-              textShadowColor: 'black',
-              textShadowRadius: 5,
-              textShadowOffset: {width: 1, height: 1},
-            }}>
-            In Theaters{' '}
-            {convertDateFormat(props.route.params.data.release_date)}
-          </Text>
-          <View
-            style={{
-              width: WindowWidth,
-              top: WindowHeight * 0.45,
-              position: 'absolute',
-              gap: WindowHeight * 0.02,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <TouchableOpacity
-              onPress={() =>
-                props.navigation.navigate('SelectTime', {
-                  data: props.route.params.data,
-                })
-              }>
-              <Button
-                text={'Get Tickets'}
-                borderColor={'#61C3F2'}
-                backgroundColor={'#61C3F2'}
-                ShowPlayButton={false}
-                textColor={'white'}
-              />
-            </TouchableOpacity>
-
-            {TrailerAvailable == true && (
-              // <YouTube
-              //   videoId="KVZ-P-ZI6W4" // The YouTube video ID
-              //   play // control playback of video with true/false
-              //   fullscreen // control whether the video should play in fullscreen or inline
-              //   loop // control whether the video should loop when ended
-              //   onReady={e => this.setState({isReady: true})}
-              //   onChangeState={e => this.setState({status: e.state})}
-              //   onChangeQuality={e => this.setState({quality: e.quality})}
-              //   onError={e => this.setState({error: e.error})}
-              //   style={{alignSelf: 'stretch', height: 300}}
-              // />
+    <SafeAreaView>
+      <View>
+        <TouchableOpacity onPress={() => props.navigation.goBack()}>
+          <Entypo name={'chevron-left'} size={25} color={'black'} />
+        </TouchableOpacity>
+      </View>
+      <View
+        style={{
+          width: WindowWidth,
+          height: WindowHeight * 0.9,
+          backgroundColor: 'white',
+        }}>
+        <Animated.ScrollView
+          onScroll={Animated.event(
+            [{nativeEvent: {contentOffset: {y: scrollY}}}],
+            {useNativeDriver: false},
+          )}
+          scrollEventThrottle={16}>
+          <View style={{width: WindowWidth, alignItems: 'center'}}>
+            <Animated.Image
+              style={{
+                height: WindowHeight * 0.65,
+                width: imageWidth,
+                resizeMode: 'cover',
+              }}
+              source={{
+                uri: String(configURL + props.route.params.data.poster_path),
+              }}
+            />
+            <Text
+              style={{
+                fontSize: 24,
+                fontWeight: '500',
+                color: 'white',
+                position: 'absolute',
+                zIndex: 10,
+                top: WindowHeight * 0.4,
+                alignSelf: 'center',
+                textShadowColor: 'black',
+                textShadowRadius: 5,
+                textShadowOffset: {width: 1, height: 1},
+              }}>
+              In Theaters{' '}
+              {convertDateFormat(props.route.params.data.release_date)}
+            </Text>
+            <View
+              style={{
+                width: WindowWidth,
+                top: WindowHeight * 0.45,
+                position: 'absolute',
+                gap: WindowHeight * 0.02,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
               <TouchableOpacity
                 onPress={() =>
-                  props.navigation.navigate(
-                    'YoutubeTrailerScreen',
-                    (data = {VideoKey}),
-                  )
+                  props.navigation.navigate('SelectTime', {
+                    data: props.route.params.data,
+                  })
                 }>
                 <Button
-                  text={'Watch Trailer'}
+                  text={'Get Tickets'}
                   borderColor={'#61C3F2'}
-                  ShowPlayButton={true}
+                  backgroundColor={'#61C3F2'}
+                  ShowPlayButton={false}
                   textColor={'white'}
                 />
               </TouchableOpacity>
-            )}
-          </View>
-        </View>
-        <View
-          style={{
-            paddingHorizontal: WindowWidth * 0.1,
-            paddingTop: WindowHeight * 0.03,
-            paddingBottom: WindowHeight * 0.2,
-            gap: WindowHeight * 0.02,
-          }}>
-          <Text
-            style={{
-              fontSize: 25,
-              color: 'black',
-              borderTopWidth: 1,
-              paddingTop: WindowHeight * 0.03,
-              borderTopColor: 'gray',
-            }}>
-            Overview
-          </Text>
 
-          <Text
+              {TrailerAvailable === true && (
+                <TouchableOpacity
+                  onPress={() =>
+                    props.navigation.navigate('YoutubeTrailerScreen', {
+                      VideoKey: VideoKey,
+                    })
+                  }>
+                  <Button
+                    text={'Watch Trailer'}
+                    borderColor={'#61C3F2'}
+                    ShowPlayButton={true}
+                    textColor={'white'}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+          <View
             style={{
-              fontSize: 16,
-              fontWeight: '300',
-              color: 'black',
-              lineHeight: WindowHeight * 0.027,
+              paddingHorizontal: WindowWidth * 0.1,
+              paddingTop: WindowHeight * 0.03,
+              paddingBottom: WindowHeight * 0.2,
+              gap: WindowHeight * 0.02,
             }}>
-            {props.route.params.data.overview}
-          </Text>
-        </View>
-      </Animated.ScrollView>
-    </View>
+            <Text
+              style={{
+                fontSize: 25,
+                color: 'black',
+                borderTopWidth: 1,
+                paddingTop: WindowHeight * 0.03,
+                borderTopColor: 'gray',
+              }}>
+              Overview
+            </Text>
+
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: '300',
+                color: 'black',
+                lineHeight: WindowHeight * 0.027,
+              }}>
+              {props.route.params.data.overview}
+            </Text>
+          </View>
+        </Animated.ScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({});

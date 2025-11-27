@@ -1,13 +1,11 @@
-import {StyleSheet, Text, View} from 'react-native';
 import AppContext from './AppContext';
 import {useState} from 'react';
 import React from 'react';
 import axios from 'axios';
-import {Header} from 'react-native/Libraries/NewAppScreen';
 
 const AppState = props => {
   const [name, setname] = useState('trying');
-  const [configURL, setconfigURL] = useState('')
+  const [configURL, setconfigURL] = useState('');
 
   const getConfig = async () => {
     const token =
@@ -24,11 +22,10 @@ const AppState = props => {
         config,
       );
 
-      console.log(res?.data?.images?.base_url); // Log the response to the console
-      setconfigURL(res?.data?.images?.base_url+'original')
+      console.log('images?.base_url', res?.data?.images?.base_url);
+      setconfigURL(res?.data?.images?.base_url + 'original');
     } catch (error) {
       console.error('Error fetching configuration:', error);
-   
     }
   };
 
@@ -38,7 +35,7 @@ const AppState = props => {
         name,
         setname,
         getConfig,
-        configURL
+        configURL,
       }}>
       {props.children}
     </AppContext.Provider>

@@ -12,20 +12,15 @@ import AppContext from '../../context/AppContext';
 import Entypo from 'react-native-vector-icons/Entypo';
 
 export default function SearchResultScreen(props) {
-
-  
-
   const Header = () => {
     return (
       <View style={styles.Header}>
-        <TouchableOpacity onPress={()=>props.navigation.navigate('Watch')}>
-         <Entypo
-              name={'chevron-left'}
-              size={25}
-              color={'black'}
-            />
-</TouchableOpacity>
-        <Text style={styles.HeaderText}>{props.route.params.data.length} results found</Text>
+        <TouchableOpacity onPress={() => props.navigation.navigate('Watch')}>
+          <Entypo name={'chevron-left'} size={25} color={'black'} />
+        </TouchableOpacity>
+        <Text style={styles.HeaderText}>
+          {props.route.params.data.length} results found
+        </Text>
       </View>
     );
   };
@@ -113,19 +108,19 @@ export default function SearchResultScreen(props) {
 }
 
 const styles = StyleSheet.create({
-    Header: {
-      width: WindowWidth,
-      height: WindowHeight * 0.1,
-      flexDirection: 'row',
+  Header: {
+    width: WindowWidth,
+    height: WindowHeight * 0.1,
+    flexDirection: 'row',
     //   justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingHorizontal: WindowWidth * 0.05,
-      backgroundColor: 'white',
-      gap:10
-    },
-    HeaderText: {
-      fontSize: 20,
-      color: 'black',
-      fontWeight: '500',
-    },
-  });
+    alignItems: 'center',
+    paddingHorizontal: WindowWidth * 0.05,
+    backgroundColor: 'white',
+    gap: 10,
+  },
+  HeaderText: {
+    fontSize: 20,
+    color: 'black',
+    fontWeight: '500',
+  },
+});

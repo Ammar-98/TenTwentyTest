@@ -50,57 +50,56 @@ const Header = ({props}) => {
           In Theaters {convertDateFormat(props.route.params.data.release_date)}{' '}
         </Text>
       </View>
-      <View></View>
     </View>
   );
 };
 
+const TimeItemView = ({item, setselectedTime, selectedTime}) => {
+  return (
+    <TouchableOpacity onPress={() => setselectedTime(item)}>
+      <View style={{opacity: selectedTime === item ? 1 : 0.5}}>
+        <View style={{flexDirection: 'row', gap: 10}}>
+          <Text style={{color: 'black', fontSize: 15, fontWeight: '500'}}>
+            {item}
+          </Text>
+          <Text style={{color: 'gray', fontSize: 15}}>Cinetech + Hall 1</Text>
+        </View>
+        <View
+          style={{
+            borderWidth: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: WindowWidth * 0.1,
+            paddingVertical: WindowHeight * 0.02,
+            borderRadius: 20,
+            marginTop: 10,
+            borderColor: selectedTime === item ? '#61C3F2' : 'black',
+          }}>
+          <Image
+            style={{width: WindowWidth * 0.4, height: WindowHeight * 0.2}}
+            source={require('../Assets/Map_Mobile.jpg')}
+          />
+        </View>
+        <View>
+          <Text style={{fontSize: 15, color: 'gray'}}>
+            From{' '}
+            <Text style={{fontSize: 15, color: 'black', fontWeight: '500'}}>
+              50$
+            </Text>{' '}
+            or{' '}
+            <Text style={{fontSize: 15, color: 'black', fontWeight: '500'}}>
+              {' '}
+              2500 bonus
+            </Text>
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
 const TimeView = ({selectedTime, setselectedTime}) => {
   const timelist = ['12:30', '13:30', '14:30', '15;30'];
 
-  const TimeItemView = ({item, setselectedTime}) => {
-    return (
-      <TouchableOpacity onPress={() => setselectedTime(item)}>
-        <View style={{opacity: selectedTime == item ? 1 : 0.5}}>
-          <View style={{flexDirection: 'row', gap: 10}}>
-            <Text style={{color: 'black', fontSize: 15, fontWeight: '500'}}>
-              {item}
-            </Text>
-            <Text style={{color: 'gray', fontSize: 15}}>Cinetech + Hall 1</Text>
-          </View>
-          <View
-            style={{
-              borderWidth: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingHorizontal: WindowWidth * 0.1,
-              paddingVertical: WindowHeight * 0.02,
-              borderRadius: 20,
-              marginTop: 10,
-              borderColor: selectedTime == item ? '#61C3F2' : 'black',
-            }}>
-            <Image
-              style={{width: WindowWidth * 0.4, height: WindowHeight * 0.2}}
-              source={require('../Assets/Map_Mobile.jpg')}
-            />
-          </View>
-          <View>
-            <Text style={{fontSize: 15, color: 'gray'}}>
-              From{' '}
-              <Text style={{fontSize: 15, color: 'black', fontWeight: '500'}}>
-                50$
-              </Text>{' '}
-              or{' '}
-              <Text style={{fontSize: 15, color: 'black', fontWeight: '500'}}>
-                {' '}
-                2500 bonus
-              </Text>
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  };
   return (
     <View
       style={{
@@ -115,10 +114,35 @@ const TimeView = ({selectedTime, setselectedTime}) => {
         contentContainerStyle={{gap: WindowWidth * 0.1}}
         keyExtractor={(item, index) => String(index)}
         renderItem={({item}) => {
-          return <TimeItemView item={item} setselectedTime={setselectedTime} />;
+          return (
+            <TimeItemView
+              item={item}
+              setselectedTime={setselectedTime}
+              selectedTime={selectedTime}
+            />
+          );
         }}
       />
     </View>
+  );
+};
+
+const DateItemView = ({item, setselectedDate, selectedDate}) => {
+  return (
+    <TouchableOpacity onPress={() => setselectedDate(item)}>
+      <Text
+        style={{
+          backgroundColor: selectedDate === item ? '#61C3F2' : '#A6A6A6',
+          width: WindowWidth * 0.25,
+          textAlign: 'center',
+          height: WindowHeight * 0.04,
+          borderRadius: WindowHeight * 0.04,
+          textAlignVertical: 'center',
+          color: selectedDate === item ? 'white' : 'black',
+        }}>
+        {item}
+      </Text>
+    </TouchableOpacity>
   );
 };
 
@@ -154,24 +178,6 @@ const DateView = ({selectedDate, setselectedDate}) => {
 
   const nextDateList = getNextTenDates();
 
-  const DateItemView = ({item, setselectedDate}) => {
-    return (
-      <TouchableOpacity onPress={() => setselectedDate(item)}>
-        <Text
-          style={{
-            backgroundColor: selectedDate == item ? '#61C3F2' : '#A6A6A6',
-            width: WindowWidth * 0.25,
-            textAlign: 'center',
-            height: WindowHeight * 0.04,
-            borderRadius: WindowHeight * 0.04,
-            textAlignVertical: 'center',
-            color: selectedDate == item ? 'white' : 'black',
-          }}>
-          {item}
-        </Text>
-      </TouchableOpacity>
-    );
-  };
   return (
     <View
       style={{
@@ -194,7 +200,13 @@ const DateView = ({selectedDate, setselectedDate}) => {
         contentContainerStyle={{gap: 10}}
         keyExtractor={(item, index) => String(index)}
         renderItem={({item}) => {
-          return <DateItemView item={item} setselectedDate={setselectedDate} />;
+          return (
+            <DateItemView
+              item={item}
+              setselectedDate={setselectedDate}
+              selectedDate={selectedDate}
+            />
+          );
         }}
       />
     </View>
@@ -224,10 +236,10 @@ const ButtonView = ({props, selectedDate, selectedTime}) => {
             borderRadius: 10,
             textAlign: 'center',
             backgroundColor:
-              selectedDate == '' || selectedDate == '' ? 'gray' : '#61C3F2',
+              selectedDate === '' || selectedDate === '' ? 'gray' : '#61C3F2',
             width: WindowWidth * 0.65,
             height: WindowHeight * 0.05,
-            opacity: selectedDate == '' || selectedTime == '' ? 0.5 : 1,
+            opacity: selectedDate === '' || selectedTime === '' ? 0.5 : 1,
           }}>
           Select Seats
         </Text>
@@ -242,7 +254,7 @@ export default function SelectTime(props) {
 
   useEffect(() => {
     console.log('PropsData', props.route.params.data);
-  }, []);
+  }, [props.route.params.data]);
 
   useEffect(() => {
     console.log('selectedTime', selectedTime);
